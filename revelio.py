@@ -315,16 +315,12 @@ def worker(BAM,TDIR,header,ref,reference,QUALITY):
 
 			# determine whether to read CT mismatches or GA mismatches
 			#CT = bool((alignment.is_read1 and not alignment.is_reverse) or (alignment.is_read2 and alignment.is_reverse) or (not alignment.is_paired and not alignment.is_reverse))
-			if alignment.has_tag("XG"):
-				XG = alignmnet.get_tag("XG")
-				if XG == "CT":
-					# OT strand
-					CT = bool(True)
-				elif XG == "GA":
-					# OB strand
-					CT = bool(False)
-				else:
-					raise Exception(f"Unknown conversion type for XG tag: {XG}")
+			if alignment.flag == 16:
+				CT = False
+			elif alignment.flag == 0:
+				CT = True
+			else:
+				raise Exception(f"Unexpected flag mask: {alignment.flag}")
 
 			# get aligned pairs, with sequence from either genome (if given) or MD-tag
 			pairs, MD = get_aligned_pairs_with_sequence(alignment,reference)
